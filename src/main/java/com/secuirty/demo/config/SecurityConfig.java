@@ -2,6 +2,7 @@ package com.secuirty.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.secuirty.demo.filters.JwtAuthFilter;
 import com.secuirty.demo.security.CustomUserDetailService;
 import com.secuirty.demo.utility.JWTUtil;
+import com.secuirty.demo.utility.Permission;
 
 @Configuration@EnableWebSecurity
 @EnableMethodSecurity
@@ -26,7 +28,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/authenticate").permitAll()
-                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/api/users/**").hasAuthority(Permission.WRITE.name())
+                .requestMatchers(HttpMethod.DELETE,"/api/users/**").hasAuthority(Permission.DELETE.name())
+                .requestMatchers(HttpMethod.GET,"/api/users").hasAuthority(Permission.READ.name())
+                .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority(Permission.READ.name())
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
