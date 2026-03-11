@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 		}
 		User newUser = new User();
 		newUser.setEmail(user.getEmail());
-		newUser.setName(user.getName());
+		newUser.setUsername(user.getUsername());
 		newUser.setRole(user.getRole());
 		newUser.setPassword(Base64.getEncoder().encodeToString(user.getPassword().getBytes()));
 		User save = userRepository.save(newUser);
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User updateUser(Long id, UserDto dto) {
 		User existedUSer = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not Found"));
-		existedUSer.setName(dto.getName());
+		existedUSer.setUsername(dto.getUsername());
 		existedUSer.setEmail(dto.getEmail());
 		existedUSer.setPassword(Base64.getEncoder().encodeToString(dto.getPassword().getBytes()));
 		existedUSer.setRole(dto.getRole());
