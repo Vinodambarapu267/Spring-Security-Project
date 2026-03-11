@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.secuirty.demo.dto.UserDto;
 import com.secuirty.demo.entity.User;
+import com.secuirty.demo.exceptions.UserAlreadyExistException;
+import com.secuirty.demo.exceptions.UserNorFoundException;
 import com.secuirty.demo.repository.UserRepository;
 import com.secuirty.demo.service.UserService;
 
@@ -24,7 +26,7 @@ public class UserServiceImpl implements UserService {
 	public User register(User user) {
 		Optional<User> existedUser = userRepository.findByEmail(user.getEmail());
 		if (existedUser.isPresent()) {
-			throw new RuntimeException("User Already exist");
+			throw new UserAlreadyExistException("User Already exist");
 		}
 		User newUser = new User();
 		newUser.setEmail(user.getEmail());
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User updateUser(Long id, UserDto dto) {
-		User existedUSer = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not Found"));
+		User existedUSer = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		existedUSer.setUsername(dto.getUsername());
 		existedUSer.setEmail(dto.getEmail());
 		existedUSer.setPassword(Base64.getEncoder().encodeToString(dto.getPassword().getBytes()));
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteById(Long id) {
-		User existedUSer = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not Found"));
+		User existedUSer = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		userRepository.existsById(existedUSer.getId());
 	}
 
@@ -57,14 +59,14 @@ public class UserServiceImpl implements UserService {
 	public List<User> findAll() {
 		List<User> allUsers = userRepository.findAll();
 		if (allUsers.isEmpty()) {
-			throw new RuntimeException("User list is empty");
+			throw new UserNorFoundException("User list is empty");
 		}
 		return allUsers;
 	}
 
 	@Override
 	public User getById(Long id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not Found"));
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		return user;
 	}
 
