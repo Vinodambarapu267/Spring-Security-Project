@@ -4,6 +4,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +17,10 @@ import com.secuirty.demo.exceptions.UserNorFoundException;
 import com.secuirty.demo.repository.UserRepository;
 import com.secuirty.demo.service.UserService;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -41,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@PreAuthorize("hasAuthority('WRITE')")
+	@CachePut(value = "users",key = "#id")
 	public User updateUser(Long id, UserDto dto) {
 		User existedUSer = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		existedUSer.setUsername(dto.getUsername());
@@ -54,6 +61,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@PreAuthorize("hasAuthority('DELETE')")
+	@CacheEvict(value = "users",key="#id")
 	public void deleteById(Long id) {
 		User existedUSer = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		userRepository.existsById(existedUSer.getId());
@@ -61,6 +69,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@PreAuthorize("hasAuthority('READ')")
+	@Cacheable(value = "users",key="'all'")
 	public List<User> findAll() {
 		List<User> allUsers = userRepository.findAll();
 		if (allUsers.isEmpty()) {
@@ -71,6 +80,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@PreAuthorize("hasAuthority('READ')")
+	@Cacheable(value = "users",key="#id")
 	public User getById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		return user;
