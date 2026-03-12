@@ -27,12 +27,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/authenticate").permitAll()
-                .requestMatchers(HttpMethod.POST,"/api/users/**").hasAuthority(Permission.WRITE.name())
-                .requestMatchers(HttpMethod.DELETE,"/api/users/**").hasAuthority(Permission.DELETE.name())
-                .requestMatchers(HttpMethod.GET,"/api/users").hasAuthority(Permission.READ.name())
-                .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority(Permission.READ.name())
-                .anyRequest().authenticated()
+               .requestMatchers("/authenticate").permitAll()
+                //.requestMatchers(HttpMethod.POST,"/api/users/**").hasAuthority(Permission.WRITE.name())
+               // .requestMatchers(HttpMethod.DELETE,"/api/users/**").hasAuthority(Permission.DELETE.name())
+               // .requestMatchers(HttpMethod.GET,"/api/users").hasAuthority(Permission.READ.name())
+               // .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority(Permission.READ.name())
+               .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

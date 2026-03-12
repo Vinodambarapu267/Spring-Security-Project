@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.secuirty.demo.dto.UserDto;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('WRITE')")
 	public User register(User user) {
 		Optional<User> existedUser = userRepository.findByEmail(user.getEmail());
 		if (existedUser.isPresent()) {
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('WRITE')")
 	public User updateUser(Long id, UserDto dto) {
 		User existedUSer = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		existedUSer.setUsername(dto.getUsername());
@@ -50,12 +53,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('DELETE')")
 	public void deleteById(Long id) {
 		User existedUSer = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		userRepository.existsById(existedUSer.getId());
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('READ')")
 	public List<User> findAll() {
 		List<User> allUsers = userRepository.findAll();
 		if (allUsers.isEmpty()) {
@@ -65,6 +70,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@PreAuthorize("hasAuthority('READ')")
 	public User getById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNorFoundException("User not Found"));
 		return user;
